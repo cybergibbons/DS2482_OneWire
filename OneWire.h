@@ -3,6 +3,10 @@
 
 #include <inttypes.h>
 
+// Chose between a table based CRC (flash expensive, fast)
+// or a computed CRC (smaller, slow)
+#define ONEWIRE_CRC8_TABLE 			1
+
 #define DS2482_COMMAND_RESET		0xF0	// Device reset
 
 #define DS2482_COMMAND_SRP			0xE1 	// Set read pointer
@@ -28,6 +32,10 @@
 #define WIRE_COMMAND_SKIP			0xCC
 #define WIRE_COMMAND_SELECT			0x55
 #define WIRE_COMMAND_SEARCH			0xF0
+
+#define DS2482_ERROR_TIMEOUT		(1<<0)
+#define DS2482_ERROR_SHORT			(1<<1)
+#define DS2482_ERROR_CONFIG			(1<<2)
 
 class OneWire
 {
@@ -66,8 +74,6 @@ public:
 	uint8_t read(void);
 	uint8_t read_bit(void);
 	void write_bit(uint8_t v);
-
-
 
 private:
 	void begin();
