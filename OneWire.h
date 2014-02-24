@@ -1,5 +1,5 @@
-#ifndef __BRIDGE_H__
-#define __BRIDGE_H__
+#ifndef __ONEWIRE_H__
+#define __ONEWIRE_H__
 
 #include <inttypes.h>
 
@@ -42,6 +42,7 @@ class OneWire
 public:
 	OneWire();
 	OneWire(uint8_t address);
+
 	uint8_t getAddress();
 	uint8_t getError();
 	uint8_t checkPresence();

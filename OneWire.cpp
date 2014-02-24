@@ -345,6 +345,12 @@ uint8_t OneWire::crc8(const uint8_t *addr, uint8_t len)
 }
 #endif
 
+// ****************************************
+// These are here to mirror the functions in the original OneWire
+// ****************************************
+
+// This is a lazy way of getting compatibility with DallasTemperature
+// Not all functions are implemented, only those used in DallasTemeperature
 void OneWire::reset_search()
 {
 	wireResetSearch();
@@ -355,41 +361,54 @@ uint8_t OneWire::search(uint8_t *newAddr)
 	return wireSearch(newAddr);
 }
 
+// Perform a 1-Wire reset cycle. Returns 1 if a device responds
+// with a presence pulse.  Returns 0 if there is no device or the
+// bus is shorted or otherwise held low for more than 250uS
 uint8_t OneWire::reset(void)
 {
 	return wireReset();
 }
 
+// Issue a 1-Wire rom select command, you do the reset first.
 void OneWire::select(const uint8_t rom[8])
 {
 	wireSelect(rom);
 }
 
+// Issue a 1-Wire rom skip command, to address all on bus.
 void OneWire::skip(void)
 {
 	wireSkip();
 }
 
+// Write a byte. 
+// Ignore the power bit
 void OneWire::write(uint8_t v, uint8_t power)
 {
 	wireWriteByte(v);	
 }
 
+// Read a byte.
 uint8_t OneWire::read(void)
 {
 	return wireReadByte();
 }
 
+// Read a bit.
 uint8_t OneWire::read_bit(void)
 {
 	return wireReadBit();
 }
 
+// Write a bit.
 void OneWire::write_bit(uint8_t v)
 {
 	wireWriteBit(v);
 }
 
+// ****************************************
+// End mirrored functions
+// ****************************************
 
 
 
