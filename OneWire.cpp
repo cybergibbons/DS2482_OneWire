@@ -4,7 +4,11 @@
 // Constructor with no parameters for compatability with OneWire lib
 OneWire::OneWire()
 {
-	OneWire(0);
+	// Address is determined by two pins on the DS2482 AD1/AD0
+	// Pass 0b00, 0b01, 0b10 or 0b11
+	mAddress = 0x18;
+	mError = 0;
+	Wire.begin();
 }
 
 OneWire::OneWire(uint8_t address)
@@ -53,7 +57,7 @@ uint8_t OneWire::readByte()
 uint8_t OneWire::checkPresence()
 {
 	begin();
-	return end();
+	return !end() ? true : false;
 }
 
 // Performs a global reset of device state machine logic. Terminates any ongoing 1-Wire communication.
