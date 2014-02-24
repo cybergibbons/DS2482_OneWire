@@ -21,6 +21,10 @@
 		#define DS2482_STATUS_DIR 			(1<<7)
 	#define DS2482_POINTER_DATA			0xE1
 	#define DS2482_POINTER_CONFIG		0xC3
+		#define DS2482_CONFIG_APU			(1<<0)
+		#define DS2482_CONFIG_SPU			(1<<2)
+		#define DS2482_CONFIG_1WS			(1<<3)
+
 
 #define DS2482_COMMAND_WRITECONFIG	0xD2
 #define DS2482_COMMAND_RESETWIRE	0xB4
@@ -54,10 +58,12 @@ public:
 	uint8_t waitOnBusy();
 	uint8_t readConfig();
 	void writeConfig(uint8_t config);
+	void setStrongPullup();
+	void clearStrongPullup();
 	uint8_t wireReset();
-	void wireWriteByte(uint8_t data);
+	void wireWriteByte(uint8_t data, uint8_t power = 0);
 	uint8_t wireReadByte();
-	void wireWriteBit(uint8_t data);
+	void wireWriteBit(uint8_t data, uint8_t power = 0);
 	uint8_t wireReadBit();
 	void wireSkip();
 	void wireSelect(const uint8_t rom[8]);

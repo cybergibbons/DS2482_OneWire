@@ -98,6 +98,16 @@ uint8_t OneWire::readConfig()
 	return readByte();
 }
 
+void OneWire::setStrongPullup()
+{
+	writeConfig(readConfig() | DS2482_CONFIG_SPU);
+}
+
+void OneWire::clearStrongPullup()
+{
+	writeConfig(readConfig() & !DS2482_CONFIG_SPU);
+}
+
 // Churn until the busy bit in the status register is clear
 uint8_t OneWire::waitOnBusy()
 {
@@ -140,6 +150,11 @@ void OneWire::writeConfig(uint8_t config)
 uint8_t OneWire::wireReset()
 {
 	waitOnBusy();
+	// Datasheet warns that reset with SPU set can exceed max ratings
+	clearStrongPullup();
+
+	waitOnBusy();
+
 	begin();
 	writeByte(DS2482_COMMAND_RESETWIRE);
 	end();
@@ -155,9 +170,11 @@ uint8_t OneWire::wireReset()
 }
 
 // Writes a single data byte to the 1-Wire line.
-void OneWire::wireWriteByte(uint8_t data)
+void OneWire::wireWriteByte(uint8_t data, uint8_t power)
 {
 	waitOnBusy();
+	if (power)
+		setStrongPullup();
 	begin();
 	writeByte(DS2482_COMMAND_WRITEBYTE);
 	writeByte(data);
@@ -179,9 +196,11 @@ uint8_t OneWire::wireReadByte()
 // (see Table 2). A V value of 0b generates a write-zero time slot (Figure 5); a V value of 1b generates a 
 // write-one time slot, which also functions as a read-data time slot (Figure 6). In either case, the logic
 // level at the 1-Wire line is tested at tMSR and SBR is updated.
-void OneWire::wireWriteBit(uint8_t data)
+void OneWire::wireWriteBit(uint8_t data, uint8_t power)
 {
 	waitOnBusy();
+	if (power)
+		setStrongPullup();
 	begin();
 	writeByte(DS2482_COMMAND_SINGLEBIT);
 	writeByte(data ? 0x80 : 0x00);
@@ -389,7 +408,7 @@ void OneWire::skip(void)
 // Ignore the power bit
 void OneWire::write(uint8_t v, uint8_t power)
 {
-	wireWriteByte(v);	
+	wireWriteByte(v, power);	
 }
 
 // Read a byte.
