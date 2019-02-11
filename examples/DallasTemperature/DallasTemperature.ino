@@ -1,7 +1,7 @@
 #include <Wire.h>
-#include <OneWire.h>
+#include <DOneWire.h>
 
-OneWire oneWire;
+DOneWire oneWire;
 
 void printAddress(uint8_t deviceAddress[8])
 {

@@ -1,11 +1,12 @@
-#ifndef __ONEWIRE_H__
-#define __ONEWIRE_H__
+#ifndef __DONEWIRE_H__
+#define __DONEWIRE_H__
 
 #include <inttypes.h>
+#include <OneWire.h>
 
 // Chose between a table based CRC (flash expensive, fast)
 // or a computed CRC (smaller, slow)
-#define ONEWIRE_CRC8_TABLE 			1
+#define DONEWIRE_CRC8_TABLE 			1
 
 #define DS2482_COMMAND_RESET		0xF0	// Device reset
 
@@ -41,11 +42,11 @@
 #define DS2482_ERROR_SHORT			(1<<1)
 #define DS2482_ERROR_CONFIG			(1<<2)
 
-class OneWire
+class DOneWire : public OneWire
 {
 public:
-	OneWire();
-	OneWire(uint8_t address);
+	DOneWire();
+	DOneWire(uint8_t address);
 
 	uint8_t getAddress();
 	uint8_t getError();
@@ -70,7 +71,7 @@ public:
 	void wireResetSearch();
 	uint8_t wireSearch(uint8_t *address);
 
-	// emulation of original OneWire library
+	// emulation of original DOneWire library
 	void reset_search();
 	uint8_t search(uint8_t *newAddr);
 	static uint8_t crc8(const uint8_t *addr, uint8_t len);
@@ -81,6 +82,10 @@ public:
 	uint8_t read(void);
 	uint8_t read_bit(void);
 	void write_bit(uint8_t v);
+
+    // Brought selectChannel from Paeaetech's DS2482 lib
+    // https://github.com/paeaetech/paeae/tree/master/Libraries/ds2482
+    bool selectChannel(uint8_t channel);
 
 private:
 	void begin();
