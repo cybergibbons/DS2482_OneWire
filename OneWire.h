@@ -82,6 +82,10 @@ public:
 	uint8_t read_bit(void);
 	void write_bit(uint8_t v);
 
+    // Brought selectChannel from Paeaetech's DS2482 lib
+    // https://github.com/paeaetech/paeae/tree/master/Libraries/ds2482
+    bool selectChannel(uint8_t channel);
+
 private:
 	void begin();
 	uint8_t end();

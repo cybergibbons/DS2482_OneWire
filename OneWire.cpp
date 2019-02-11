@@ -1,5 +1,6 @@
 #include "OneWire.h"
 #include <Wire.h>
+#include "Arduino.h"
 
 // Constructor with no parameters for compatability with OneWire lib
 OneWire::OneWire()
@@ -433,9 +434,55 @@ void OneWire::write_bit(uint8_t v)
 // End mirrored functions
 // ****************************************
 
+bool OneWire::selectChannel(uint8_t channel)
+{
+	uint8_t ch, ch_read;
 
+	switch (channel)
+	{
+		case 0:
+		default:
+			ch = 0xf0;
+			ch_read = 0xb8;
+			break;
+		case 1:
+			ch = 0xe1;
+			ch_read = 0xb1;
+			break;
+		case 2:
+			ch = 0xd2;
+			ch_read = 0xaa;
+			break;
+		case 3:
+			ch = 0xc3;
+			ch_read = 0xa3;
+			break;
+		case 4:
+			ch = 0xb4;
+			ch_read = 0x9c;
+			break;
+		case 5:
+			ch = 0xa5;
+			ch_read = 0x95;
+			break;
+		case 6:
+			ch = 0x96;
+			ch_read = 0x8e;
+			break;
+		case 7:
+			ch = 0x87;
+			ch_read = 0x87;
+			break;
+	};
 
+	waitOnBusy();
+	begin();
+	Wire.write(0xc3);
+	Wire.write(ch);
+	end();
+	waitOnBusy();
 
+	uint8_t check = readByte();
 
-
-
+	return check == ch_read;
+}
