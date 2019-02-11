@@ -1,11 +1,11 @@
-#include <OneWire.h>
+#include <DOneWire.h>
 #include <DallasTemperature.h>
 
 // This is required for the Arduino IDE + DS2482
 #include <Wire.h>
 
 // When instantiated with no parameters, uses I2C address 18
-OneWire oneWire;
+DOneWire oneWire;
 // OneWire oneWire(2) // Use address 20
 
 DallasTemperature sensors(&oneWire);

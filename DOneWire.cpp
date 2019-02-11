@@ -1,9 +1,9 @@
-#include "OneWire.h"
+#include "DOneWire.h"
 #include <Wire.h>
 #include "Arduino.h"
 
-// Constructor with no parameters for compatability with OneWire lib
-OneWire::OneWire()
+// Constructor with no parameters for compatability with DOneWire lib
+DOneWire::DOneWire()
 {
 	// Address is determined by two pins on the DS2482 AD1/AD0
 	// Pass 0b00, 0b01, 0b10 or 0b11
@@ -12,7 +12,7 @@ OneWire::OneWire()
 	Wire.begin();
 }
 
-OneWire::OneWire(uint8_t address)
+DOneWire::DOneWire(uint8_t address)
 {
 	// Address is determined by two pins on the DS2482 AD1/AD0
 	// Pass 0b00, 0b01, 0b10 or 0b11
@@ -21,33 +21,33 @@ OneWire::OneWire(uint8_t address)
 	Wire.begin();
 }
 
-uint8_t OneWire::getAddress()
+uint8_t DOneWire::getAddress()
 {
 	return mAddress;
 }
 
-uint8_t OneWire::getError()
+uint8_t DOneWire::getError()
 {
 	return mError;
 }
 
 // Helper functions to make dealing with I2C side easier
-void OneWire::begin()
+void DOneWire::begin()
 {
 	Wire.beginTransmission(mAddress);
 }
 
-uint8_t OneWire::end()
+uint8_t DOneWire::end()
 {
 	return Wire.endTransmission();
 }
 
-void OneWire::writeByte(uint8_t data)
+void DOneWire::writeByte(uint8_t data)
 {
 	Wire.write(data); 
 }
 
-uint8_t OneWire::readByte()
+uint8_t DOneWire::readByte()
 {
 	Wire.requestFrom(mAddress,1u);
 	return Wire.read();
@@ -55,14 +55,14 @@ uint8_t OneWire::readByte()
 
 // Simply starts and ends an Wire transmission
 // If no devices are present, this returns false
-uint8_t OneWire::checkPresence()
+uint8_t DOneWire::checkPresence()
 {
 	begin();
 	return !end() ? true : false;
 }
 
 // Performs a global reset of device state machine logic. Terminates any ongoing 1-Wire communication.
-void OneWire::deviceReset()
+void DOneWire::deviceReset()
 {
 	begin();
 	write(DS2482_COMMAND_RESET);
@@ -70,7 +70,7 @@ void OneWire::deviceReset()
 }
 
 // Sets the read pointer to the specified register. Overwrites the read pointer position of any 1-Wire communication command in progress.
-void OneWire::setReadPointer(uint8_t readPointer)
+void DOneWire::setReadPointer(uint8_t readPointer)
 {
 	begin();
 	writeByte(DS2482_COMMAND_SRP);
@@ -79,38 +79,38 @@ void OneWire::setReadPointer(uint8_t readPointer)
 }
 
 // Read the status register
-uint8_t OneWire::readStatus()
+uint8_t DOneWire::readStatus()
 {
 	setReadPointer(DS2482_POINTER_STATUS);
 	return readByte();
 }
 
 // Read the data register
-uint8_t OneWire::readData()
+uint8_t DOneWire::readData()
 {
 	setReadPointer(DS2482_POINTER_DATA);
 	return readByte();
 }
 
 // Read the config register
-uint8_t OneWire::readConfig()
+uint8_t DOneWire::readConfig()
 {
 	setReadPointer(DS2482_POINTER_CONFIG);
 	return readByte();
 }
 
-void OneWire::setStrongPullup()
+void DOneWire::setStrongPullup()
 {
 	writeConfig(readConfig() | DS2482_CONFIG_SPU);
 }
 
-void OneWire::clearStrongPullup()
+void DOneWire::clearStrongPullup()
 {
 	writeConfig(readConfig() & !DS2482_CONFIG_SPU);
 }
 
 // Churn until the busy bit in the status register is clear
-uint8_t OneWire::waitOnBusy()
+uint8_t DOneWire::waitOnBusy()
 {
 	uint8_t status;
 
@@ -131,7 +131,7 @@ uint8_t OneWire::waitOnBusy()
 }
 
 // Write to the config register
-void OneWire::writeConfig(uint8_t config)
+void DOneWire::writeConfig(uint8_t config)
 {
 	waitOnBusy();
 	begin();
@@ -148,7 +148,7 @@ void OneWire::writeConfig(uint8_t config)
 // Generates a 1-Wire reset/presence-detect cycle (Figure 4) at the 1-Wire line. The state
 // of the 1-Wire line is sampled at tSI and tMSP and the result is reported to the host 
 // processor through the Status Register, bits PPD and SD.
-uint8_t OneWire::wireReset()
+uint8_t DOneWire::wireReset()
 {
 	waitOnBusy();
 	// Datasheet warns that reset with SPU set can exceed max ratings
@@ -171,7 +171,7 @@ uint8_t OneWire::wireReset()
 }
 
 // Writes a single data byte to the 1-Wire line.
-void OneWire::wireWriteByte(uint8_t data, uint8_t power)
+void DOneWire::wireWriteByte(uint8_t data, uint8_t power)
 {
 	waitOnBusy();
 	if (power)
@@ -183,7 +183,7 @@ void OneWire::wireWriteByte(uint8_t data, uint8_t power)
 }
 
 // Generates eight read-data time slots on the 1-Wire line and stores result in the Read Data Register.
-uint8_t OneWire::wireReadByte()
+uint8_t DOneWire::wireReadByte()
 {
 	waitOnBusy();
 	begin();
@@ -197,7 +197,7 @@ uint8_t OneWire::wireReadByte()
 // (see Table 2). A V value of 0b generates a write-zero time slot (Figure 5); a V value of 1b generates a 
 // write-one time slot, which also functions as a read-data time slot (Figure 6). In either case, the logic
 // level at the 1-Wire line is tested at tMSR and SBR is updated.
-void OneWire::wireWriteBit(uint8_t data, uint8_t power)
+void DOneWire::wireWriteBit(uint8_t data, uint8_t power)
 {
 	waitOnBusy();
 	if (power)
@@ -209,7 +209,7 @@ void OneWire::wireWriteBit(uint8_t data, uint8_t power)
 }
 
 // As wireWriteBit
-uint8_t OneWire::wireReadBit()
+uint8_t DOneWire::wireReadBit()
 {
 	wireWriteBit(1);
 	uint8_t status = waitOnBusy();
@@ -217,12 +217,12 @@ uint8_t OneWire::wireReadBit()
 }
 
 // 1-Wire skip
-void OneWire::wireSkip()
+void DOneWire::wireSkip()
 {
 	wireWriteByte(WIRE_COMMAND_SKIP);
 }
 
-void OneWire::wireSelect(const uint8_t rom[8])
+void DOneWire::wireSelect(const uint8_t rom[8])
 {
 	wireWriteByte(WIRE_COMMAND_SELECT);
 	for (int i=0;i<8;i++)
@@ -230,7 +230,7 @@ void OneWire::wireSelect(const uint8_t rom[8])
 }
 
 //  1-Wire reset seatch algorithm
-void OneWire::wireResetSearch()
+void DOneWire::wireResetSearch()
 {
 	searchLastDiscrepancy = 0;
 	searchLastDeviceFlag = 0;
@@ -243,7 +243,7 @@ void OneWire::wireResetSearch()
 }
 
 // Perform a search of the 1-Wire bus
-uint8_t OneWire::wireSearch(uint8_t *address)
+uint8_t DOneWire::wireSearch(uint8_t *address)
 {
 	uint8_t direction;
 	uint8_t last_zero=0;
@@ -338,7 +338,7 @@ static const uint8_t PROGMEM dscrc_table[] = {
 // compared to all those delayMicrosecond() calls.  But I got
 // confused, so I use this table from the examples.)
 //
-uint8_t OneWire::crc8(const uint8_t *addr, uint8_t len)
+uint8_t DOneWire::crc8(const uint8_t *addr, uint8_t len)
 {
 	uint8_t crc = 0;
 
@@ -352,7 +352,7 @@ uint8_t OneWire::crc8(const uint8_t *addr, uint8_t len)
 // Compute a Dallas Semiconductor 8 bit CRC directly.
 // this is much slower, but much smaller, than the lookup table.
 //
-uint8_t OneWire::crc8(const uint8_t *addr, uint8_t len)
+uint8_t DOneWire::crc8(const uint8_t *addr, uint8_t len)
 {
 	uint8_t crc = 0;
 	
@@ -370,17 +370,17 @@ uint8_t OneWire::crc8(const uint8_t *addr, uint8_t len)
 #endif
 
 // ****************************************
-// These are here to mirror the functions in the original OneWire
+// These are here to mirror the functions in the original DOneWire
 // ****************************************
 
 // This is a lazy way of getting compatibility with DallasTemperature
 // Not all functions are implemented, only those used in DallasTemeperature
-void OneWire::reset_search()
+void DOneWire::reset_search()
 {
 	wireResetSearch();
 }
 
-uint8_t OneWire::search(uint8_t *newAddr)
+uint8_t DOneWire::search(uint8_t *newAddr)
 {
 	return wireSearch(newAddr);
 }
@@ -388,44 +388,44 @@ uint8_t OneWire::search(uint8_t *newAddr)
 // Perform a 1-Wire reset cycle. Returns 1 if a device responds
 // with a presence pulse.  Returns 0 if there is no device or the
 // bus is shorted or otherwise held low for more than 250uS
-uint8_t OneWire::reset(void)
+uint8_t DOneWire::reset(void)
 {
 	return wireReset();
 }
 
 // Issue a 1-Wire rom select command, you do the reset first.
-void OneWire::select(const uint8_t rom[8])
+void DOneWire::select(const uint8_t rom[8])
 {
 	wireSelect(rom);
 }
 
 // Issue a 1-Wire rom skip command, to address all on bus.
-void OneWire::skip(void)
+void DOneWire::skip(void)
 {
 	wireSkip();
 }
 
 // Write a byte. 
 // Ignore the power bit
-void OneWire::write(uint8_t v, uint8_t power)
+void DOneWire::write(uint8_t v, uint8_t power)
 {
 	wireWriteByte(v, power);	
 }
 
 // Read a byte.
-uint8_t OneWire::read(void)
+uint8_t DOneWire::read(void)
 {
 	return wireReadByte();
 }
 
 // Read a bit.
-uint8_t OneWire::read_bit(void)
+uint8_t DOneWire::read_bit(void)
 {
 	return wireReadBit();
 }
 
 // Write a bit.
-void OneWire::write_bit(uint8_t v)
+void DOneWire::write_bit(uint8_t v)
 {
 	wireWriteBit(v);
 }
@@ -434,7 +434,7 @@ void OneWire::write_bit(uint8_t v)
 // End mirrored functions
 // ****************************************
 
-bool OneWire::selectChannel(uint8_t channel)
+bool DOneWire::selectChannel(uint8_t channel)
 {
 	uint8_t ch, ch_read;
 
