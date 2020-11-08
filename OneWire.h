@@ -1,7 +1,9 @@
 #ifndef __ONEWIRE_H__
 #define __ONEWIRE_H__
 
+#include <stddef.h>
 #include <inttypes.h>
+
 
 // Chose between a table based CRC (flash expensive, fast)
 // or a computed CRC (smaller, slow)
@@ -59,6 +61,7 @@ public:
 	uint8_t readConfig();
 	void writeConfig(uint8_t config);
 	void setStrongPullup();
+    uint8_t setChannel(uint8_t ch);
 	void clearStrongPullup();
 	uint8_t wireReset();
 	void wireWriteByte(uint8_t data, uint8_t power = 0);
