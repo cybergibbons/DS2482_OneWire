@@ -241,6 +241,20 @@ void OneWire::wireResetSearch()
 
 }
 
+// Set the channel on the DS2482-800
+uint8_t OneWire::setChannel(uint8_t ch){
+  uint8_t w[] = {0xf0, 0xe1, 0xd2, 0xc3, 0xb4, 0xa5, 0x96, 0x87};
+  uint8_t r[] = {0xb8, 0xb1, 0xaa, 0xa3, 0x9c, 0x95, 0x8e, 0x87};
+  waitOnBusy();
+  begin();
+  writeByte(0xc3);
+  writeByte(w[ch]);
+  end();
+  waitOnBusy();
+  return readByte() == r[ch];
+}
+
+
 // Perform a search of the 1-Wire bus
 uint8_t OneWire::wireSearch(uint8_t *address)
 {
