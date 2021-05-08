@@ -20,6 +20,28 @@ OneWire::OneWire(uint8_t address)
 	Wire.begin();
 }
 
+OneWire::OneWire(uint8_t sdaPin, uint8_t sclPin)
+{
+	// sdaPin and sclPin can override the default SCL and SDA
+	// pins on some hardware
+	// Address is determined by two pins on the DS2482 AD1/AD0
+	// Pass 0b00, 0b01, 0b10 or 0b11
+	mAddress = 0x18;
+	mError = 0;
+	Wire.begin(sdaPin, sclPin);
+}
+
+OneWire::OneWire(uint8_t sdaPin, uint8_t sclPin, uint8_t address)
+{
+	// sdaPin and sclPin can override the default SCL and SDA
+	// pins on some hardware
+	// Address is determined by two pins on the DS2482 AD1/AD0
+	// Pass 0b00, 0b01, 0b10 or 0b11
+	mAddress = 0x18 | address;
+	mError = 0;
+	Wire.begin(sdaPin, sclPin);
+}
+
 uint8_t OneWire::getAddress()
 {
 	return mAddress;
